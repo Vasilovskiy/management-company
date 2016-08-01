@@ -7,6 +7,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use common\behaviors\DateToTimeBehavior;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -20,7 +21,7 @@ use yii\web\IdentityInterface;
  * @property string $middle_name
  * @property string $last_name
  * @property string $email
- * @property integer  $date_of_birth
+ * @property integer $date_of_birth
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
@@ -38,9 +39,9 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
-    public $role;
+    public $role = "user";
     public $roles;
-
+    public $birthday_formatted;
     public $generate_password;
     public $password;
     public $password_confirm;
@@ -59,7 +60,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            [
+                'class' => DateToTimeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'birthday_formatted',
+                    ActiveRecord::EVENT_AFTER_FIND => 'birthday_formatted',
+                ],
+                'timeAttribute' => 'date_of_birth'
+            ]
         ];
     }
 
@@ -70,25 +78,40 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [['username'], 'required'],
-            [['date_of_birth', 'status'], 'integer'],
-            [['username', 'password_hash', 'password_reset_token', 'first_name',
-                'middle_name', 'last_name', 'email'], 'string', 'max' => 255],
+            [['status'], 'integer'],
+            [
+                [
+                    'username',
+                    'password_hash',
+                    'password_reset_token',
+                    'first_name',
+                    'middle_name',
+                    'last_name',
+                    'email'
+                ],
+                'string',
+                'max' => 255
+            ],
+            [['date_of_birth'], 'integer'],
+            ['birthday_formatted', 'date', 'format' => 'php:d.m.Y'],
             [['auth_key'], 'string', 'max' => 32],
-            [['username'], 'unique'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
             [['password_hash'], 'unique'],
             [['password_reset_token'], 'unique'],
             [['password', 'role'], 'safe'],
-            [['password','password_confirm'], 'required'],
-            ['email','email'],
+            [['password', 'password_confirm'], 'required', 'on' => 'register'],
+            ['email', 'email'],
             ['generate_password', 'integer', 'max' => 1, 'on' => 'register'],
             ['password', 'string', 'min' => 8, 'on' => 'register'],
             ['password_confirm', 'compare', 'compareAttribute' => 'password', 'on' => 'register'],
-
             ['username', 'udokmeci\yii2PhoneValidator\PhoneValidator', 'country' => 'RU'],
-            ['username', 'filter', 'filter' => function ($value) {
-                return str_replace([' ', '_', '-', '(', ')'], '', $value);
-            }],
-
+            [
+                'username',
+                'filter',
+                'filter' => function ($value) {
+                    return str_replace([' ', '_', '-', '(', ')'], '', $value);
+                }
+            ],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
         ];
@@ -114,8 +137,10 @@ class User extends ActiveRecord implements IdentityInterface
             'status' => 'Status',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+            'birthday_formatted' => 'День рождение'
         ];
     }
+
     /**
      * @inheritdoc
      */
@@ -123,6 +148,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password = Yii::$app->security->generateRandomString(8);
     }
+
     /**
      * @inheritdoc
      */
@@ -254,6 +280,7 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = null;
     }
 
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -308,5 +335,65 @@ class User extends ActiveRecord implements IdentityInterface
     public function getVotes()
     {
         return $this->hasMany(Vote::className(), ['user_id' => 'id']);
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+
+            return true;
+        }
+        return false;
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        if ($this->role) {
+            $auth = Yii::$app->authManager;
+            $role = $auth->getRole($this->role);
+            if ($role) {
+                $auth->revokeAll($this->id);
+                $auth->assign($role, $this->id);
+            }
+        }
+    }
+
+    public static function companyOwners()
+    {
+        $user = User::find()
+            ->leftJoin('auth_assignment aa', 'aa.user_id = user.id')
+            ->where(['aa.item_name' => 'ownerCompany'])
+            ->all();
+
+        return $user;
+    }
+
+    public function getFullname()
+    {
+        $fullname = null;
+
+        if ($this->last_name || $this->first_name || $this->middle_name) {
+            $fullname = $this->last_name . " " . $this->first_name;
+
+            if ($this->middle_name) {
+                $fullname .= ' ' . $this->middle_name;
+            }
+        }
+
+        return $fullname;
+    }
+
+    public function getRole()
+    {
+        $this->roles = Yii::$app->authManager->getRolesByUser($this->id);
+
+        $roles = [];
+        foreach ($this->roles as $key => $role) {
+            $roles[] = $role->name;
+        }
+
+        return isset($roles[0]) ? $roles[0] : null;
     }
 }

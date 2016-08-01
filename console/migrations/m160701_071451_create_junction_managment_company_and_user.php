@@ -12,11 +12,13 @@ class m160701_071451_create_junction_managment_company_and_user extends Migratio
               'user_id'=>$this->integer()->notNull()
           ]);
 
-        $this->createIndex('idx-managment_company_user-managment_company_id', 'managment_company_user', 'managment_company_id');
-        $this->createIndex('idx-managment_company_user-user_id', 'managment_company_user', 'user_id');
 
-        $this->addForeignKey('fk-managment_company_user-managment_company_id', 'managment_company_user', 'managment_company_id', 'managment_company', 'id');
-        $this->addForeignKey('fk-managment_company_user-user_id', 'managment_company_user', 'user_id', 'user', 'id');
+
+        $this->createIndex('idx-managment_company_user-managment_company_id', '{{%managment_company_user}}', 'managment_company_id');
+        $this->createIndex('idx-managment_company_user-user_id', '{{%managment_company_user}}', 'user_id');
+
+        $this->addForeignKey('fk-managment_company_user-managment_company_id', '{{%managment_company_user}}', 'managment_company_id', 'managment_company', 'id');
+        $this->addForeignKey('fk-managment_company_user-user_id', '{{%managment_company_user}}', 'user_id', 'user', 'id');
     }
 
     public function down()

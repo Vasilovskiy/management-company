@@ -12,7 +12,7 @@ class m160701_071521_create_house_table extends Migration
             'user_id' => $this->integer()->defaultValue(null),//временное решение
             'attachment_id'=>$this->integer()->defaultValue(null),
             'managment_company_id'=>$this->integer()->defaultValue(null),
-            'fias_house_id'=>$this->integer()->defaultValue(null),//временное решение
+            'address_id'=>$this->integer()->defaultValue(null),//временное решение
             'floors'=>$this->integer()->notNull(),
             'apartaments'=>$this->integer()->notNull(),
             'year_of_build'=>$this->integer()->notNull(),
@@ -24,9 +24,9 @@ class m160701_071521_create_house_table extends Migration
             'updated_at'=>$this->integer()->notNull(),
         ]);
 
-        $this->createIndex('idx-house-managment_company_id','house','managment_company_id');
-
-        $this->addForeignKey('fk-house-managment_company_id','house','managment_company_id','managment_company','id');
+        $this->createIndex('idx-house-managment_company_id','{{%house}}','managment_company_id');
+        $this->createIndex('idx-house-address_id','{{%house}}','address_id');
+        $this->addForeignKey('fk-house-managment_company_id','{{%house}}','managment_company_id','managment_company','id');
     }
 
     public function down()

@@ -23,19 +23,44 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'id',
             'username',
             //'auth_key',
-            'password_hash',
+            //'password_hash',
             //'password_reset_token',
-             'first_name',
-             'middle_name',
-             'last_name',
-             'email:email',
-             'date_of_birth',
+            [
+                'attribute' => 'name',
+                'label' => 'Имя',
+                'value' => function ($model, $index, $value) {
+                    return $model->last_name . ' ' . $model->first_name . ' ' . $model->middle_name;
+                },
+            ],
+            [
+                'attribute' => 'role',
+                'label' => 'Роль',
+                'value' => function ($model, $index, $widget) {
+                    if ($model->getRole() == "ownerCompany") {
+                        return "Управляющий компании";
+                    } elseif ($model->getRole() == "managerCompany") {
+                        return "Менеджер компании";
+                    } elseif ($model->getRole() == "owner") {
+                        return "Владелец";
+                    } elseif ($model->getRole() == "tenant") {
+                        return "Арендатор";
+                    } elseif ($model->getRole() == "user") {
+                        return "Пользователь";
+                    } elseif ($model->getRole() == "admin") {
+                        return "Администратор";
+                    }
+                }
+            ],
+            //'first_name',
+            //'middle_name',
+            //'last_name',
+            'email:email',
+            'date_of_birth:date',
             // 'status',
-            // 'created_at',
+            //'created_at:datetime',
             // 'updated_at',
 
             ['class' => 'yii\grid\ActionColumn'],

@@ -15,9 +15,9 @@ class m160701_071525_create_poll_table extends Migration
             'updated_at'=>$this->integer()->notNull(),
         ]);
 
-        $this->createIndex('idx-poll-poll_question_id','poll','poll_question_id');
+        $this->createIndex('idx-poll-poll_question_id','{{%poll}}','poll_question_id');
 
-        $this->addForeignKey('fk-poll-poll_question_id','poll','poll_question_id','poll_question','id');
+        $this->addForeignKey('fk-poll-poll_question_id','{{%poll}}','poll_question_id','poll_question','id');
     }
 
     public function down()

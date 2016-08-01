@@ -2,17 +2,18 @@
 
 namespace backend\controllers;
 
+use common\models\MapAddress;
 use Yii;
-use common\models\User;
-use backend\models\UserSearch;
+use common\models\House;
+use backend\models\HouseSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 /**
- * UserController implements the CRUD actions for User model.
+ * HouseController implements the CRUD actions for House model.
  */
-class UserController extends Controller
+class HouseController extends Controller
 {
     /**
      * @inheritdoc
@@ -43,12 +44,12 @@ class UserController extends Controller
     }
 
     /**
-     * Lists all User models.
+     * Lists all House models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new UserSearch();
+        $searchModel = new HouseSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -58,7 +59,7 @@ class UserController extends Controller
     }
 
     /**
-     * Displays a single User model.
+     * Displays a single House model.
      * @param integer $id
      * @return mixed
      */
@@ -70,29 +71,35 @@ class UserController extends Controller
     }
 
     /**
-     * Creates a new User model.
+     * Creates a new House model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new User();
-        $model->setScenario("register");
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $model->generateAuthKey();
-            $model->setPassword($model->password);
+        $model = new House();
+        $address = new MapAddress();
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $model->address_id = $address->findSelf($model->addressText);
+
             if ($model->save()) {
-                //Yii::$app->SMSCenter->send($model->username, 'nalegke.net логин: ' . $model->username . ' пароль:' . $model->password);
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
+
+        if (Yii::$app->request->isPost && $model->address_id == null) {
+            $model->addError('addressText', 'Неверный адрес');
+        }
+
         return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing User model.
+     * Updates an existing House model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -100,18 +107,38 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $address = $model->address;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        if (!$address) {
+            $address = new MapAddress();
         }
+        else {
+            $model->addressText = $address->fulladdress;
+        }
+
+        if ($model->load(Yii::$app->request->post())) {
+//            var_dump($model->addressText);
+//            die();
+
+            $model->address_id = $address->findSelf($model->addressText);
+
+
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+        }
+
+        if (Yii::$app->request->isPost && $model->address_id == null) {
+            $model->addError('addressText', 'Неверный адрес');
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     /**
-     * Deletes an existing User model.
+     * Deletes an existing House model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -124,19 +151,18 @@ class UserController extends Controller
     }
 
     /**
-     * Finds the User model based on its primary key value.
+     * Finds the House model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return User the loaded model
+     * @return House the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = User::findOne($id)) !== null) {
+        if (($model = House::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
 }

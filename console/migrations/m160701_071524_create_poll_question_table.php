@@ -18,13 +18,13 @@ class m160701_071524_create_poll_question_table extends Migration
              'updated_at'=>$this->integer()->notNull(),
          ]);
 
-        $this->createIndex('idx-poll_question-user_id','poll_question','user_id');
-        $this->createIndex('idx-poll_question-managment_company_id','poll_question','managment_company_id');
-        $this->createIndex('idx-poll_question-post_id','poll_question','post_id');
+        $this->createIndex('idx-poll_question-user_id','{{%poll_question}}','user_id');
+        $this->createIndex('idx-poll_question-managment_company_id','{{%poll_question}}','managment_company_id');
+        $this->createIndex('idx-poll_question-post_id','{{%poll_question}}','post_id');
 
-        $this->addForeignKey('idx-poll_question-user_id','poll_question','user_id','user','id');
-        $this->addForeignKey('idx-poll_question-managment_company_id','poll_question','managment_company_id','managment_company','id');
-        $this->addForeignKey('idx-poll_question-post_id','poll_question','post_id','post','id');
+        $this->addForeignKey('idx-poll_question-user_id','{{%poll_question}}','user_id','user','id');
+        $this->addForeignKey('idx-poll_question-managment_company_id','{{%poll_question}}','managment_company_id','managment_company','id');
+        $this->addForeignKey('idx-poll_question-post_id','{{%poll_question}}','post_id','post','id');
     }
 
     public function down()

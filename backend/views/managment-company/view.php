@@ -4,13 +4,13 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\User */
+/* @var $model common\models\ManagmentCompany */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+$this->title = $model->title;
+$this->params['breadcrumbs'][] = ['label' => 'Managment Companies', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="user-view">
+<div class="managment-company-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -29,15 +29,23 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'username',
-            'auth_key',
-            'password_hash',
-            'password_reset_token',
-            'first_name',
-            'middle_name',
-            'last_name',
-            'email:email',
-            'birthday_formatted',
+            'title',
+            'address.fulladdress',
+            'domen',
+            'number',
+            'legal_name',
+            'legal_address',
+            'inn',
+            'kpp',
+            'ogrn',
+            'ras_schet',
+            'korr_schet',
+            'bik',
+            'inn_bank',
+            'kpp_bank',
+            'ogrn_bank',
+            'created_at',
+            'updated_at',
         ],
     ]) ?>
 

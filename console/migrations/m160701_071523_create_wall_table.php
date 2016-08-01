@@ -17,13 +17,13 @@ class m160701_071523_create_wall_table extends Migration
             'created_at'=>$this->integer()->notNull(),
             'updated_at'=>$this->integer()->notNull(),
         ]);
-        $this->createIndex('idx-post-house_id','post','house_id');
-        $this->createIndex('idx-post-user_id','post','user_id');
-        $this->createIndex('idx-post-managment_company_id', 'post','managment_company_id');
+        $this->createIndex('idx-post-house_id','{{%post}}','house_id');
+        $this->createIndex('idx-post-user_id','{{%post}}','user_id');
+        $this->createIndex('idx-post-managment_company_id', '{{%post}}','managment_company_id');
 
-        $this->addForeignKey('fk-post-house_id', 'post', 'house_id','house','id');
-        $this->addForeignKey('fk-post-user_id','post','user_id','user','id');
-        $this->addForeignKey('fk-post-managment_company_id','post','managment_company_id','managment_company','id');
+        $this->addForeignKey('fk-post-house_id', '{{%post}}', 'house_id','house','id');
+        $this->addForeignKey('fk-post-user_id','{{%post}}','user_id','user','id');
+        $this->addForeignKey('fk-post-managment_company_id','{{%post}}','managment_company_id','managment_company','id');
     }
 
     public function down()

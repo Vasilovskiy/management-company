@@ -44,6 +44,10 @@ return [
             'rules' => [
             ],
         ],
+        'formatter' => [
+            'dateFormat' => 'dd.MM.yyyy',
+            /*'datetimeFormat' => 'dd.MM.yyyy HH:mm:ss'*/
+        ],
 
     ],
     'params' => $params,

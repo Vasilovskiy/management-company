@@ -15,11 +15,11 @@ class m160714_101121_create_table_advertisment extends Migration
             'updated_at' => $this->integer()->notNull(),
         ]);
 
-        $this->createIndex('idx-advertisment-post_id', 'advertisment', 'post_id');
-        $this->createIndex('idx-advertisment-user_id', 'advertisment', 'user_id');
+        $this->createIndex('idx-advertisment-post_id', '{{%advertisment}}', 'post_id');
+        $this->createIndex('idx-advertisment-user_id', '{{%advertisment}}', 'user_id');
 
-        $this->addForeignKey('fk-advertisment-post_id', 'advertisment', 'post_id', 'post', 'id');
-        $this->addForeignKey('fk-advertisment-user_id', 'advertisment', 'user_id', 'user', 'id');
+        $this->addForeignKey('fk-advertisment-post_id', '{{%advertisment}}', 'post_id', 'post', 'id');
+        $this->addForeignKey('fk-advertisment-user_id', '{{%advertisment}}', 'user_id', 'user', 'id');
     }
 
     public function down()

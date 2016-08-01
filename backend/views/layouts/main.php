@@ -41,6 +41,8 @@ AppAsset::register($this);
             $menuItems = [
                 ['label' => 'Home', 'url' => ['/site/index']],
                 ['label' => 'Users', 'url' => ['/user/index']],
+                ['label' => 'Company', 'url' => ['/managment-company/index']],
+                ['label' => 'Houses', 'url' => ['/house/index']]
             ];
         }
         $menuItems[] = '<li>'

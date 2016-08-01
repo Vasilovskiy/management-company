@@ -131,28 +131,33 @@ class m140506_102106_rbac_init extends \yii\db\Migration
         $auth = Yii::$app->authManager;
 
         $user = $auth->createRole('user');
-        $user->description = 'Ïîëüçîâàòåëü';
+        $user->description = 'ĞŸĞ¾Ğ»ÑŒĞ·Ğ¾Ğ²Ğ°Ñ‚ĞµĞ»ÑŒ';
         $auth->add($user);
 
         $tenant = $auth->createRole('tenant');
-        $tenant->description = 'Àğåíäàòîğ';
+        $tenant->description = 'ĞÑ€ĞµĞ½Ğ´Ğ°Ñ‚Ğ¾Ñ€';
         $auth->add($tenant);
         $auth->addChild($tenant, $user);
 
         $owner = $auth->createRole('owner');
-        $owner->description = 'Âëàäåëåö';
+        $owner->description = 'Ğ’Ğ»Ğ°Ğ´ĞµĞ»ĞµÑ†';
         $auth->add($owner);
         $auth->addChild($owner, $tenant);
 
-        $managmentCompany = $auth->createRole('managmentCompany');
-        $managmentCompany->description = 'Óïğàâëÿşùàÿ êîìïàíèÿ';
-        $auth->add($managmentCompany);
-        $auth->addChild($managmentCompany, $owner);
+        $managerCompany = $auth->createRole('managerCompany');
+        $managerCompany->description = 'ĞœĞµĞ½ĞµĞ´Ğ¶ĞµÑ€ ĞºĞ¾Ğ¼Ğ¿Ğ°Ğ½Ğ¸Ğ¸';
+        $auth->add($managerCompany);
+        $auth->addChild($managerCompany, $owner);
+
+        $ownerCompany = $auth->createRole('ownerCompany');
+        $ownerCompany->description = 'Ğ£Ğ¿Ñ€Ğ°Ğ²Ğ»ÑÑÑ‰Ğ¸Ğ¹ ĞºĞ¾Ğ¼Ğ¿Ğ°Ğ½Ğ¸Ğ¸';
+        $auth->add($ownerCompany);
+        $auth->addChild($ownerCompany, $managerCompany);
 
         $admin = $auth->createRole('admin');
-        $admin->description = 'Àäìèíèñòğàòîğ';
+        $admin->description = 'ĞĞ´Ğ¼Ğ¸Ğ½Ğ¸ÑÑ‚Ñ€Ğ°Ñ‚Ğ¾Ñ€';
         $auth->add($admin);
-        $auth->addChild($admin, $managmentCompany);
+        $auth->addChild($admin, $ownerCompany);
 
         $auth->assign($admin, 1);
     }

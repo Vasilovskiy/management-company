@@ -1,4 +1,4 @@
- {
+{
     "name": "yiisoft/yii2-app-advanced",
     "description": "Yii 2 Advanced Project Template",
     "keywords": ["yii2", "framework", "advanced", "project template"],
@@ -21,7 +21,8 @@
         "nikitich/yii2-smsc": "dev-master",
         "udokmeci/yii2-phone-validator" : "~1.0.1",
         "yiisoft/yii2-jui": "^2.0",
-        "budyaga/yii2-users": "*"
+        "budyaga/yii2-users": "*",
+        "deka6pb/yii2-geocoder": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
